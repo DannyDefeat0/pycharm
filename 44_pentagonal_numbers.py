@@ -8,8 +8,9 @@ def pentagonal_number_generator(n):
 
 pents = pentagonal_number_generator(10000)
 
-def bisect_search(lst, item):
-   return (item <= lst[-1]) and (lst[bisect_left(lst, item)] == item)
+def bisect_search(list, item):
+    #binary searching is faster because this list was presorted, unsure how long this ends up taking with just 'in"
+   return (item <= list[-1]) and (list[bisect_left(list, item)] == item)
 
 D = 10e99
 #this is the largest possible gap in our current solution pool, we will gradually decrease this within our next loop

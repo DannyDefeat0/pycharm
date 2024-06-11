@@ -1,3 +1,4 @@
+import sys
 tris = []
 pents = []
 hexs = []
@@ -5,7 +6,8 @@ hexs = []
 matches = 0
 
 
-for i in range(2,100000000):
+
+for i in range(2,sys.maxsize**10):
     tris.append(int((i/2)*(i+1)))
     pents.append(int((i/2)*(3*i - 1)))
     hexs.append(int(i*(2*i - 1)))

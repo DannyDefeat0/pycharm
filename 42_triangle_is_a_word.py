@@ -7,6 +7,7 @@ def triangle_formula(n):
         triangle_numbers.append(int(0.5*i*(i+1)))
     return triangle_numbers
 
+#the string library can score words without writing a function
 def word_value(word):
     value = 0
     for char in word:
@@ -14,6 +15,8 @@ def word_value(word):
     return value
 
 triangles = triangle_formula(1000)
+#alternative approach - we could grow this list after checking the value of each word is less than the greatest value
+#in our triangle list
 number_of_word_triangles = 0
 
 for word in words:

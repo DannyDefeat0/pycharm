@@ -1,4 +1,3 @@
-import math
 
 
 def is_prime(n):
@@ -11,15 +10,14 @@ def is_prime(n):
         return True
 
 number = 3
-
 primes = [2]
 
-while number <= 1e6:
+while number <= 1e5:
     if is_prime(number):
         primes.append(number)
     else:
         for p in primes:
-            if math.sqrt((number-p)/2) == int(math.sqrt((number-p)/2)):
+            if ((number-p)/2)**0.5 == int(((number-p)/2)**0.5):
                 break
         else:
             print(number)

@@ -4,7 +4,6 @@ filtered_permutations = [''.join(p) for p in itertools.permutations("0123456789"
 
 primes = [2, 3, 5, 7, 11, 13, 17]
 
-total = 0
 
 
 def prime_property_check(number):
@@ -15,8 +14,8 @@ def prime_property_check(number):
         i += 1
     return int(number)
 
+total = 0
 
-prime_property_check("1406357289")
 
 for permutation in filtered_permutations:
     total += prime_property_check(permutation)
