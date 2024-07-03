@@ -10,3 +10,4 @@ def sieve(n):
                 is_prime[j] = False
     return primes
 
+
