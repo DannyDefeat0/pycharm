@@ -1,6 +1,5 @@
 def permutation(num1, num2):
-    #if two numbers are a permutation of each other they will sort to the same number
-    return ''.join(sorted(str(num1))) == ''.join(sorted(str(num2)))
+    return sorted(str(num1)) == sorted(str(num2))
 
 
 for i in range(1, 1000000):
@@ -12,3 +11,9 @@ for i in range(1, 1000000):
     if k >= 6:
         print(i)
         break
+"""
+while True:
+        if all(has_same_digits(x, k * x) for k in range(2, 7)):
+            return x
+        x += 1
+"""

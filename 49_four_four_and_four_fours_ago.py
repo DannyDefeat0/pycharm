@@ -1,17 +1,9 @@
-def prime_sieve(n):
-    is_prime = [False, False] + [True] * (n - 1)
-    list_of_primes = [2]
+import euler_functions
 
-    for i in range(3, n + 1, 2):
-        if is_prime[i]:
-            list_of_primes.append(i)
-            for j in range(i * i, n + 1, i):
-                is_prime[j] = False
-    return list_of_primes
-
-primes = [str(prime) for prime in prime_sieve(10000) if len(str(prime)) == 4]
+primes = [str(prime) for prime in list(euler_functions.sieve(10000)) if len(str(prime)) == 4]
 
 prime_dict = {}
+
 for prime in primes:
     if ''.join(sorted(prime)) in prime_dict:
         prime_dict[''.join(sorted(prime))].add(int(prime))

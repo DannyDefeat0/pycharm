@@ -9,7 +9,6 @@ for _ in range(1000):
     #and a constant one, only the ratio should change
     tmp = fraction + 1
     if len(str(tmp.numerator)) > len(str(tmp.denominator)):
-        print(_+1, tmp)
         longer_numerators += 1
 
 print(longer_numerators)

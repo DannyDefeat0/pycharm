@@ -1,15 +1,8 @@
-truncatable_primes = set()
+import euler_functions
 
-n = 1000000
-is_prime = [False, False] + [True] * (n - 1)
-primes = [2]
+primes = euler_functions.sieve_list(1000000)
 
-for i in range(3, n + 1, 2):
-    if is_prime[i]:
-        primes.append(i)
-        for j in range(i * i, n + 1, i):
-            is_prime[j] = False
-print(len(primes))
+print(primes)
 
 maximum = 0, 0
 
