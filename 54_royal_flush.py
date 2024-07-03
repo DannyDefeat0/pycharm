@@ -1,7 +1,6 @@
-import requests
+import euler_functions
 
-url = 'https://projecteuler.net/resources/documents/0054_poker.txt'
-lines = requests.get(url).text.splitlines()
+lines = euler_functions.open_txt('https://projecteuler.net/resources/documents/0054_poker.txt')
 
 card_values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13,
                'A': 14}
@@ -96,5 +95,5 @@ for line in lines:
     hand2 = sorted(hands[1].split(), key=card_value, reverse=True)
     if compare_hands(hand1, hand2) == hand1:
         player_1_wins += 1
-        print("Win", evaluate_hand(hand1), evaluate_hand(hand2))
+        #print("Win", evaluate_hand(hand1), evaluate_hand(hand2))
 print(player_1_wins)

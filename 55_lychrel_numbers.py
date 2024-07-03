@@ -17,5 +17,4 @@ lychrel_count = 0
 for i in range(1,int(1e4)+1):
     if lychrel_test(i, 0):
         lychrel_count += 1
-        print(i)
 print(lychrel_count)

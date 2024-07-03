@@ -5,7 +5,6 @@ def combinatorics_greater_than_k(n, k):
     for i in range(n+1):
         for r in range(n+1):
             if math.comb(i, r) > k:
-                print(i, r)
                 greater_than_k_count += 1
     return greater_than_k_count
 
