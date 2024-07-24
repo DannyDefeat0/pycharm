@@ -36,11 +36,12 @@ def upload_html5_ads_to_banana_campaigns(client, customer_id, html5_ads_director
     with open(html5_ad_path, 'rb') as f:
       media_file.data = f.read()
 
-    ad_image_asset = client.get_type('AdImageAsset')
-    ad_image_asset.media_file = media_file
-
     media_file_operation = client.get_type('MediaFileOperation')
     media_file_operation.create = media_file
+
+    ad_image_asset = client.get_type('AdImageAsset')
+    ad_image_asset.media_file = media_file_operation.create.resource_name  # Reference the resource name
+
     ad_image_asset_operation = client.get_type('AdImageAssetOperation')
     ad_image_asset_operation.create = ad_image_asset
 
@@ -54,6 +55,7 @@ def upload_html5_ads_to_banana_campaigns(client, customer_id, html5_ads_director
     ad_image_asset_resource_name = response.results[1].resource_name
 
     return media_file_resource_name, ad_image_asset_resource_name
+
 
   # Get campaigns containing "bananas"
   query = f'SELECT campaign.id, campaign.name FROM campaign WHERE campaign.name CONTAINS "bananas"'
