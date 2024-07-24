@@ -30,27 +30,23 @@ def upload_html5_ads_to_banana_campaigns(client, customer_id, html5_ads_director
       return None
 
 
-  def create_media_file_and_ad_image_asset(client, customer_id, html5_ad_path):
-    # Upload the HTML5 ad
-    with open(html5_ad_path, 'rb') as f:
-      media_data = f.read()
-    upload_request = client.get_type('UploadMediaRequest')
-    upload_request.media = media_data
-    upload_response = upload_service.upload_media(customer_id, upload_request)
 
-    # Create the media file
+  def create_media_file_and_ad_image_asset(client, customer_id, html5_ad_path):
     media_file = client.get_type('MediaFile')
     media_file.type_ = client.enums.MediaTypeEnum.MEDIA_BUNDLE
-    media_file.source_url = upload_response.media_file.id  # Reference uploaded media
+    media_file.name = 'my_html5_ad.zip'
+
+    with open(html5_ad_path, 'rb') as f:
+      media_file.data = base64.b64encode(f.read()).decode('utf-8')
 
     ad_image_asset = client.get_type('AdImageAsset')
     ad_image_asset.media_file = media_file
 
-    # Create media file and ad image asset (mutate calls not needed anymore)
     response = google_ads_service.mutate(
-        customer_id=customer_id,
-        operations=[media_file, ad_image_asset],
-        partial_failure=True,
+      customer_id=customer_id,
+      media_file_operations=[media_file],
+      ad_image_asset_operations=[ad_image_asset],
+      partial_failure=True
     )
 
     media_file_resource_name = response.results[0].resource_name
