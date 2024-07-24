@@ -29,33 +29,34 @@ def upload_html5_ads_to_banana_campaigns(client, customer_id, html5_ads_director
       logging.warning("No RDA ads found for ad group")
       return None
 
-  def create_media_file_and_ad_image_asset(client, customer_id, html5_ad_path):
-    media_file = client.get_type('MediaFile')
-    media_file.type_ = client.enums.MediaFileTypeEnum.MEDIA_BUNDLE
-    media_file.name = 'my_html5_ad.zip'
-    with open(html5_ad_path, 'rb') as f:
-      media_file.data = f.read()
 
-    media_file_operation = client.get_type('MediaFileOperation')
-    media_file_operation.create = media_file
+  def create_media_file_and_ad_image_asset(client, customer_id, html5_ad_path):
+    # Upload the HTML5 ad
+    with open(html5_ad_path, 'rb') as f:
+      media_data = f.read()
+    upload_request = client.get_type('UploadMediaRequest')
+    upload_request.media = media_data
+    upload_response = upload_service.upload_media(customer_id, upload_request)
+
+    # Create the media file
+    media_file = client.get_type('MediaFile')
+    media_file.type_ = client.enums.MediaTypeEnum.MEDIA_BUNDLE
+    media_file.source_url = upload_response.media_file.id  # Reference uploaded media
 
     ad_image_asset = client.get_type('AdImageAsset')
-    ad_image_asset.media_file = media_file_operation.create.resource_name  # Reference the resource name
+    ad_image_asset.media_file = media_file
 
-    ad_image_asset_operation = client.get_type('AdImageAssetOperation')
-    ad_image_asset_operation.create = ad_image_asset
-
-    response = client.get_service('GoogleAdsService').mutate(
-      customer_id=customer_id,
-      operations=[media_file_operation, ad_image_asset_operation],
-      partial_failure=True
+    # Create media file and ad image asset (mutate calls not needed anymore)
+    response = google_ads_service.mutate(
+        customer_id=customer_id,
+        operations=[media_file, ad_image_asset],
+        partial_failure=True,
     )
 
     media_file_resource_name = response.results[0].resource_name
     ad_image_asset_resource_name = response.results[1].resource_name
 
     return media_file_resource_name, ad_image_asset_resource_name
-
 
   # Get campaigns containing "bananas"
   query = f'SELECT campaign.id, campaign.name FROM campaign WHERE campaign.name CONTAINS "bananas"'
