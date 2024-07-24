@@ -1,57 +1,49 @@
-import google_ads_client
-import logging
-import zipfile
-import os
-import base64
-from google.ads.google_ads.v17.services.asset_service import AssetServiceClient
-from google.ads.google_ads.v17.resources.asset import Asset
-from google.ads.google_ads.v17.enums.asset_type_enum import AssetTypeEnum
-from google.ads.google_ads.v17.services.media_file_service import MediaFileServiceClient
-from google.ads.google_ads.v17.resources.media_file import MediaFile
-from google.ads.google_ads.v17.enums.media_file_type_enum import MediaFileTypeEnum
+def upload_html5_ad(client, customer_id, ad_group_id, html5_zip_path):
+    """Uploads an HTML5 ad and creates a Display Upload Ad associated with an ad group.
 
-def upload_html5_ads_to_banana_campaigns(client, customer_id, html5_ads_directory):
-  """Uploads all HTML5 ads containing "Jeep" to ad groups in campaigns containing "bananas"."""
+    Args:
+        client: An initialized GoogleAdsClient instance.
+        customer_id: The Google Ads customer ID.
+        ad_group_id: The ID of the ad group to associate the ad with.
+        html5_zip_path: The local path to the HTML5 zip file.
+    """
 
-  google_ads_service = client.get_service('GoogleAdsService')
-  asset_service = AssetServiceClient(client)
-  media_file_service = MediaFileServiceClient(client)
+    # 1. Read the HTML5 zip file
+    with open(html5_zip_path, "rb") as zip_file:
+        zip_data = zip_file.read()
 
-  # ... (rest of your function)
+    # 2. Create a Media Bundle Asset
+    asset_service = client.get_service("AssetService")
+    media_bundle_operation = client.get_type("AssetOperation")
+    media_bundle = media_bundle_operation.create
+    media_bundle.type_ = client.get_type("AssetTypeEnum").AssetType.MEDIA_BUNDLE
+    media_bundle.media_bundle_asset.data = zip_data
 
-  def create_media_file_and_ad_image_asset(client, customer_id, html5_ad_path):
-    # Create media file
-    media_file = MediaFile(
-        type_=MediaFileTypeEnum.MEDIA_BUNDLE,
-        name='my_html5_ad.zip',
+    # 3. Upload the Media Bundle Asset
+    mutate_asset_response = asset_service.mutate_assets(
+        customer_id=customer_id, operations=[media_bundle_operation]
     )
+    media_bundle_resource_name = mutate_asset_response.results[0].resource_name
 
-    with open(html5_ad_path, 'rb') as f:
-      media_file.data = base64.b64encode(f.read()).decode('utf-8')
+    # 4. Create Display Upload Ad
+    ad_group_ad_service = client.get_service("AdGroupAdService")
+    ad_group_ad_operation = client.get_type("AdGroupAdOperation")
+    ad_group_ad = ad_group_ad_operation.create
+    ad_group_ad.ad_group = client.get_service(
+        "AdGroupService"
+    ).ad_group_path(customer_id, ad_group_id)
 
-    media_file_response = media_file_service.create_media_file(
-        customer_id=customer_id, media_file=media_file
+    display_upload_ad = ad_group_ad.ad.display_upload_ad
+    display_upload_ad.display_upload_product_type = (
+        client.get_type("DisplayUploadProductTypeEnum")
+        .DisplayUploadProductType.HTML5_UPLOAD_AD
     )
-    media_file_resource_name = media_file_response.resource_name
+    display_upload_ad.media_bundle.asset = media_bundle_resource_name
 
-    # Create ad image asset
-    image_asset = Asset(
-        type_=AssetTypeEnum.IMAGE,
-        media_file=media_file_resource_name,
-        name='My HTML5 Ad'
+    # 5. Add the Display Upload Ad to the Ad Group
+    ad_group_ad_response = ad_group_ad_service.mutate_ad_group_ads(
+        customer_id=customer_id, operations=[ad_group_ad_operation]
     )
-
-    asset_operation = client.get_type('AssetOperation')
-    asset_operation.create = image_asset
-
-    response = asset_service.mutate_assets(
-      customer_id=customer_id,
-      operations=[asset_operation],
-      partial_failure=True
+    print(
+        f"Created Display Upload Ad with resource name: {ad_group_ad_response.results[0].resource_name}"
     )
-
-    ad_image_asset_resource_name = response.results[0].resource_name
-
-    return media_file_resource_name, ad_image_asset_resource_name
-
-  # ... (rest of the function)
